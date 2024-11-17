@@ -1,23 +1,25 @@
+//openai imports
 require('dotenv').config();
 const express = require("express");
-const { OpenAI } = require("openai"); // Import OpenAI directly from the openai package
+const { OpenAI } = require("openai"); 
 const cors = require("cors");
 
 const app = express();
 const port = 3000;
 
-// Initialize the OpenAI instance
+//config
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Ensure your API key is set correctly
-  engine: "gpt-3.5-turbo", // specify the model
+  apiKey: process.env.OPENAI_API_KEY, 
+  engine: "gpt-3.5-turbo", 
 });
 
 app.use(express.json());
 app.use(cors());
 
+//get post message
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
-
+  //generate openai response
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",  // specify model
@@ -35,7 +37,7 @@ app.post("/chat", async (req, res) => {
     res.status(500).send("Error generating response");
   }
 });
-
+//start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Interface</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+    #chat-container {
+      margin-top: 20px;
+    }
+    #message-display {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      min-height: 200px;
+      text-align: left;
+    }
+    .message {
+      margin: 5px 0;
+    }
+    .user-message {
+      font-weight: bold;
+    }
+    .bot-message {
+      color: #007BFF;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chatbot Interface</h1>
+  <div id="chat-container">
+    <input type="text" id="user-message" placeholder="Type your question here" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  <div id="message-display"></div>
+
+  <script>
+    async function sendMessage() {
+      const messageInput = document.getElementById("user-message");
+      const messageDisplay = document.getElementById("message-display");
+      const message = messageInput.value;
+
+      if (!message) return;
+
+      // Display the user's message
+      const userMessageElement = document.createElement("div");
+      userMessageElement.className = "message user-message";
+      userMessageElement.textContent = `User: ${message}`;
+      messageDisplay.appendChild(userMessageElement);
+
+      try {
+        // Send the message to the backend
+        const response = await fetch("http://localhost:3000/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
+        
+        const data = await response.json();
+        
+        // Display the bot's reply
+        const botMessageElement = document.createElement("div");
+        botMessageElement.className = "message bot-message";
+        botMessageElement.textContent = `Bot: ${data.reply}`;
+        messageDisplay.appendChild(botMessageElement);
+        
+        // Clear the input field
+        messageInput.value = "";
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  </script>
+</body>
+</html>
