@@ -3,57 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot Interface</title>
+  <title>ChatGPT-Like Interface</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      text-align: center;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
+
     #chat-container {
-      margin-top: 20px;
-    }
-    #message-display {
-      margin-top: 20px;
-      padding: 10px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin: auto;
+      max-width: 800px;
+      width: 100%;
       border: 1px solid #ddd;
-      min-height: 200px;
-      text-align: left;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
     }
+
+    #message-display {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+
     .message {
-      margin: 5px 0;
+      margin: 10px 0;
+      display: flex;
+      align-items: flex-start;
     }
+
+    .user-message, .bot-message {
+      padding: 10px 15px;
+      border-radius: 12px;
+      max-width: 70%;
+    }
+
     .user-message {
-      font-weight: bold;
+      margin-left: auto;
+      background-color: #007BFF;
+      color: white;
     }
+
     .bot-message {
-      color: #007BFF;
+      margin-right: auto;
+      background-color: #e9ecef;
+      color: black;
+    }
+
+    #input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background-color: #f7f9fc;
+    }
+
+    #user-message {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      margin-right: 10px;
+    }
+
+    #send-button {
+      background-color: #007BFF;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #send-button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h1>Chatbot Interface</h1>
   <div id="chat-container">
-    <input type="text" id="user-message" placeholder="Type your question here" />
-    <button onclick="sendMessage()">Send</button>
+    <div id="message-display"></div>
+    <div id="input-container">
+      <input type="text" id="user-message" placeholder="Type your question here" />
+      <button id="send-button" onclick="sendMessage()">Send</button>
+    </div>
   </div>
-  <div id="message-display"></div>
 
   <script>
     async function sendMessage() {
       const messageInput = document.getElementById("user-message");
       const messageDisplay = document.getElementById("message-display");
-      const message = messageInput.value;
+      const message = messageInput.value.trim();
 
       if (!message) return;
 
       // Display the user's message
       const userMessageElement = document.createElement("div");
       userMessageElement.className = "message user-message";
-      userMessageElement.textContent = `User: ${message}`;
+      userMessageElement.textContent = message;
       messageDisplay.appendChild(userMessageElement);
+
+      // Scroll to the bottom
+      messageDisplay.scrollTop = messageDisplay.scrollHeight;
 
       try {
         // Send the message to the backend
@@ -66,13 +127,16 @@
         });
         
         const data = await response.json();
-        
+
         // Display the bot's reply
         const botMessageElement = document.createElement("div");
         botMessageElement.className = "message bot-message";
-        botMessageElement.textContent = `Bot: ${data.reply}`;
+        botMessageElement.textContent = data.reply;
         messageDisplay.appendChild(botMessageElement);
-        
+
+        // Scroll to the bottom
+        messageDisplay.scrollTop = messageDisplay.scrollHeight;
+
         // Clear the input field
         messageInput.value = "";
       } catch (error) {
@@ -82,3 +146,4 @@
   </script>
 </body>
 </html>
+
