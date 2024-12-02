@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatGPT-Like Interface</title>
+  <title>Chatbot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,8 +11,68 @@
       margin: 0;
       padding: 0;
       display: flex;
-      flex-direction: column;
       height: 100vh;
+    }
+
+    #sidebar {
+      width: 250px;
+      background-color: #e9ecef;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    #sidebar h2 {
+      font-size: 18px;
+      margin: 0 0 10px 0;
+    }
+
+    .chat-history {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background-color: #fff;
+    }
+
+    .chat-history:hover {
+      background-color: #f1f1f1;
+    }
+
+    #main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ddd;
+      background-color: #f7f9fc;
+    }
+
+    #chat-header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    #new-chat-button {
+      background-color: #007BFF;
+      color: white;
+      padding: 5px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #new-chat-button:hover {
+      background-color: #0056b3;
     }
 
     #chat-container {
@@ -22,9 +82,6 @@
       margin: auto;
       max-width: 800px;
       width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
       background: #fff;
     }
 
@@ -91,59 +148,148 @@
   </style>
 </head>
 <body>
-  <div id="chat-container">
-    <div id="message-display"></div>
-    <div id="input-container">
-      <input type="text" id="user-message" placeholder="Type your question here" />
-      <button id="send-button" onclick="sendMessage()">Send</button>
+  <div id="sidebar">
+    <h2>Old Chats</h2>
+    <div id="chat-list"></div>
+  </div>
+
+  <div id="main-container">
+    <div id="chat-header">
+      <h1>Chatbot</h1>
+      <button id="new-chat-button" onclick="startNewChat()">New Chat</button>
+    </div>
+
+    <div id="chat-container">
+      <div id="message-display"></div>
+      <div id="input-container">
+        <input type="text" id="user-message" placeholder="Type your question here" />
+        <button id="send-button" onclick="sendMessage()">Send</button>
+      </div>
     </div>
   </div>
 
   <script>
-    async function sendMessage() {
-      const messageInput = document.getElementById("user-message");
-      const messageDisplay = document.getElementById("message-display");
-      const message = messageInput.value.trim();
+    let chatHistory = [];
+let currentChat = [];
+let currentChatIndex = null;
 
-      if (!message) return;
+function initializeChat() {
+  // Startet automatisch einen ersten Chat beim Laden der Seite
+  const timestamp = new Date().toLocaleString();
+  currentChat = [];
+  currentChatIndex = 0;
+  chatHistory.push({ timestamp, messages: currentChat });
 
-      // Display the user's message
-      const userMessageElement = document.createElement("div");
-      userMessageElement.className = "message user-message";
-      userMessageElement.textContent = message;
-      messageDisplay.appendChild(userMessageElement);
+  updateChatList();
+  loadChat(currentChatIndex);
+}
 
-      // Scroll to the bottom
-      messageDisplay.scrollTop = messageDisplay.scrollHeight;
-
-      try {
-        // Send the message to the backend
-        const response = await fetch("http://localhost:3000/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ message })
-        });
-        
-        const data = await response.json();
-
-        // Display the bot's reply
-        const botMessageElement = document.createElement("div");
-        botMessageElement.className = "message bot-message";
-        botMessageElement.textContent = data.reply;
-        messageDisplay.appendChild(botMessageElement);
-
-        // Scroll to the bottom
-        messageDisplay.scrollTop = messageDisplay.scrollHeight;
-
-        // Clear the input field
-        messageInput.value = "";
-      } catch (error) {
-        console.error("Error:", error);
-      }
+function startNewChat() {
+  // Speichert den aktuellen Chat, falls vorhanden
+  if (currentChat.length > 0) {
+    const timestamp = new Date().toLocaleString();
+    if (currentChatIndex !== null) {
+      chatHistory[currentChatIndex] = { timestamp, messages: currentChat };
+    } else {
+      chatHistory.push({ timestamp, messages: currentChat });
     }
+  }
+
+  // Erstellt einen neuen Chat
+  const newTimestamp = new Date().toLocaleString();
+  currentChat = [];
+  currentChatIndex = chatHistory.length;
+  chatHistory.push({ timestamp: newTimestamp, messages: currentChat });
+
+  updateChatList();
+  loadChat(currentChatIndex);
+}
+
+function updateChatList() {
+  const chatList = document.getElementById("chat-list");
+  chatList.innerHTML = "";
+
+  chatHistory.forEach((chat, index) => {
+    const chatElement = document.createElement("div");
+    chatElement.className = "chat-history";
+    chatElement.textContent = `Chat ${index + 1} - ${chat.timestamp}`;
+    chatElement.onclick = () => loadChat(index);
+
+    // Überprüfen, ob der aktuelle Chat hervorgehoben werden soll
+    if (index === currentChatIndex) {
+      chatElement.style.fontWeight = "bold";
+      chatElement.style.backgroundColor = "#d3d3d3";
+    } else {
+      chatElement.style.fontWeight = "normal";
+      chatElement.style.backgroundColor = "transparent";
+    }
+
+    chatList.appendChild(chatElement);
+  });
+}
+
+
+function loadChat(index) {
+  currentChatIndex = index; // Setzt den aktuellen Index
+  const chat = chatHistory[index];
+  const messageDisplay = document.getElementById("message-display");
+  messageDisplay.innerHTML = "";
+
+  chat.messages.forEach(({ sender, text }) => {
+    const messageElement = document.createElement("div");
+    messageElement.className = `message ${sender === "user" ? "user-message" : "bot-message"}`;
+    messageElement.textContent = text;
+    messageDisplay.appendChild(messageElement);
+  });
+
+  currentChat = [...chat.messages];
+
+  // Aktualisiert die Seitenleiste, um die Hervorhebung zu korrigieren
+  updateChatList();
+}
+
+
+async function sendMessage() {
+  const messageInput = document.getElementById("user-message");
+  const messageDisplay = document.getElementById("message-display");
+  const message = messageInput.value.trim();
+
+  if (!message) return;
+
+  const userMessageElement = document.createElement("div");
+  userMessageElement.className = "message user-message";
+  userMessageElement.textContent = message;
+  messageDisplay.appendChild(userMessageElement);
+
+  currentChat.push({ sender: "user", text: message });
+  messageInput.value = "";
+  messageDisplay.scrollTop = messageDisplay.scrollHeight;
+
+  try {
+    const response = await fetch("http://localhost:3000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    const data = await response.json();
+
+    const botMessageElement = document.createElement("div");
+    botMessageElement.className = "message bot-message";
+    botMessageElement.textContent = data.reply;
+    messageDisplay.appendChild(botMessageElement);
+
+    currentChat.push({ sender: "bot", text: data.reply });
+    messageDisplay.scrollTop = messageDisplay.scrollHeight;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+// Führt die Initialisierungsfunktion beim Laden der Seite aus
+document.addEventListener("DOMContentLoaded", initializeChat);
+
   </script>
 </body>
 </html>
+
 
