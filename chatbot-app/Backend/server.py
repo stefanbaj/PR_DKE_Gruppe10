@@ -14,19 +14,28 @@ openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def chat():
     data = request.json
     message = data.get("message")
-    
-    # Generate OpenAI response
+
+    if not message:
+        return jsonify({"error": "Message is required"}), 400
+
+    # Limit tokens per response
+    MAX_TOKENS_PER_RESPONSE = 100
+
     try:
+        # Generate OpenAI response with token limit
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",  # Specify model
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": message},
             ],
+            max_tokens=MAX_TOKENS_PER_RESPONSE  # Limit the number of tokens in the response
         )
 
         reply = completion.choices[0].message["content"]
-        return jsonify({"reply": reply})
+        tokens_used = completion["usage"]["completion_tokens"]  # Get tokens used for the reply
+
+        return jsonify({"reply": reply, "tokens_used": tokens_used})
 
     except OpenAIError as e:
         print("Error in chat:", e)
