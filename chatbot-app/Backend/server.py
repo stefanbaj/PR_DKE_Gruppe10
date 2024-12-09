@@ -1,15 +1,18 @@
-# openai imports
+import openai
 import os
 from flask import Flask, request, jsonify
-from openai import OpenAI, OpenAIError
 from flask_cors import CORS
+from dotenv import load_dotenv
 
-# Config
+# Lade Umgebungsvariablen
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
-openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Define route for chat
+# Setze den API-Schlüssel
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
@@ -18,30 +21,19 @@ def chat():
     if not message:
         return jsonify({"error": "Message is required"}), 400
 
-    # Limit tokens per response
-    MAX_TOKENS_PER_RESPONSE = 100
-
     try:
-        # Generate OpenAI response with token limit
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Specify model
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": message},
-            ],
-            max_tokens=MAX_TOKENS_PER_RESPONSE  # Limit the number of tokens in the response
+        # Korrekte Methode für neuere API-Versionen
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": message}],
+            max_tokens=100
         )
-
-        reply = completion.choices[0].message["content"]
-        tokens_used = completion["usage"]["completion_tokens"]  # Get tokens used for the reply
-
-        return jsonify({"reply": reply, "tokens_used": tokens_used})
-
-    except OpenAIError as e:
+        reply = response['choices'][0]['message']['content']  # Antwort extrahieren
+        return jsonify({"reply": reply})
+    except Exception as e:
         print("Error in chat:", e)
-        return "Error generating response", 500
+        return jsonify({"error": "Failed to generate response"}), 500
 
-# Start server
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 3000))
+    port = int(os.getenv("PORT", 3000))
     app.run(host="0.0.0.0", port=port)
