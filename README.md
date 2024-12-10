@@ -10,3 +10,5 @@ IDE: VSCode
 Datensatz von data.gv.at: https://www.data.gv.at/katalog/dataset/9861f2a3-d9ed-44e6-a2e5-34ac2b3561dd#resources
 
 LLM: Chat-Gpt 3.5
+
+API-Key in einer .env Datei Lokal gespeichert.
