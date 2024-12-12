@@ -1,0 +1,44 @@
+<div id="app-container">
+  <div id="sidebar">
+    <h2>Alte Chats</h2>
+    <div id="chat-list">
+      <div
+        *ngFor="let chat of chatHistory; let i = index"
+        class="chat-history"
+        [ngClass]="{ 'active-chat': i === currentChatIndex }"
+        (click)="loadChat(i)"
+      >
+        Chat {{ i + 1 }} - {{ chat.timestamp }}
+      </div>
+    </div>
+  </div>
+
+  <div id="main-container">
+    <div id="chat-header">
+      <h1>Chatbot</h1>
+      <button id="new-chat-button" (click)="startNewChat()">Neuer Chat</button>
+    </div>
+
+    <div id="chat-container">
+      <div id="message-display">
+        <div
+          *ngFor="let message of currentChat"
+          class="message"
+          [ngClass]="message.sender === 'user' ? 'user-message' : 'bot-message'"
+        >
+          {{ message.text }}
+        </div>
+      </div>
+      <div id="input-container">
+        <input
+          type="text"
+          id="user-message"
+          placeholder="Schreiben Sie Ihre Frage hier"
+          [(ngModel)]="userMessage"
+          (keyup.enter)="sendMessage()"
+        />
+        <button id="send-button" (click)="sendMessage()">Schicken</button>
+      </div>
+    </div>
+  </div>
+</div>
