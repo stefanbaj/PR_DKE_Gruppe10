@@ -116,6 +116,7 @@ def create_retrieval_qa_chain(vectorstore):
 
     User Question:
     {question}
+    Beantworte die Frage in mehr als 1 Wort.
 
     Your Answer:
     """)

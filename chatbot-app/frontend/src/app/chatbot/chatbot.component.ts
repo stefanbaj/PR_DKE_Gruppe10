@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -6,13 +6,18 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss'],
 })
-export class ChatbotComponent {
+export class ChatbotComponent implements OnInit {
   userMessage: string = ''; // Input message from the user
   chatHistory: { timestamp: string; messages: { sender: string; text: string }[] }[] = []; // List of chat sessions
   currentChat: { sender: string; text: string }[] = []; // Messages in the active chat session
   currentChatIndex: number | null = null; // Index of the currently active chat session
 
   constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    // Initialize the first chat session when the component loads
+    this.startNewChat();
+  }
 
   // Starts a new chat session
   startNewChat(): void {

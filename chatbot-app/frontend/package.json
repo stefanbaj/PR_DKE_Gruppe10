@@ -45,9 +45,9 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.0.4",
-    "@angular/cli": "~16.0.4",
+    "@angular/cli": "^16.2.16",
     "@angular/compiler-cli": "^16.0.4",
-    "@angular/localize": "^16.0.4",
+    "@angular/localize": "^16.2.12",
     "@types/chart.js": "^2.9.37",
     "@types/dom-to-image": "^2.6.7",
     "@types/jasmine": "~4.3.0",
