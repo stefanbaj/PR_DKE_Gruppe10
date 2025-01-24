@@ -1,4 +1,4 @@
-ChatbotApp Organisation: Projektleiter: Fabian Baumgartner[11923684] Gruppenmitglied: Stefan Bajic[11710892]
+ChatbotApp Organisation: Projektleiter: Fabian Baumgartner[11923684] & Gruppenmitglied: Stefan Bajic[11710892]
 
 Projektmanagement: JIRA: https://gruppe10prdke.atlassian.net/jira/software/projects/KAN/boards/1?atlOrigin=eyJpIjoiNzE3MjMyMzg2ZDY1NGQ3OTk0ZmEyNjQ3MmQzZTQ5MzciLCJwIjoiaiJ9
 
