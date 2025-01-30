@@ -105,7 +105,7 @@ def create_retrieval_qa_chain(vectorstore):
         google_api_key=GEMINI_API_KEY,
         temperature=0.7,
         top_p=0.85,
-        max_output_tokens=256
+        max_output_tokens=100
     )
     
     # Prompt template for the QA task
