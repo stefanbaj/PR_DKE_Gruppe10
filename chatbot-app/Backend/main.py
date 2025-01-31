@@ -105,12 +105,12 @@ def create_retrieval_qa_chain(vectorstore):
         google_api_key=GEMINI_API_KEY,
         temperature=0.7,
         top_p=0.85,
-        max_output_tokens=100
+        max_output_tokens=255
     )
     
     # Prompt template for the QA task
     prompt_template = PromptTemplate.from_template("""
-Du bist ein Chatbot-Assistent. Du erhältst CSV-Dateien als Datensätze, die du sorgfältig lesen und analysieren sollst. Analysiere die Daten und beantworte die Fragen der Benutzer genau und ausführlich. Der Datensatz enthält die beliebtesten Namen in Linz im Jahr 2023. Er umfasst männliche und weibliche Namen, die nach Beliebtheit sortiert sind.
+Du bist ein Chatbot-Assistent. Du erhältst CSV-Dateien als Datensätze, die du sorgfältig lesen und analysieren sollst. Analysiere die Daten und beantworte die Fragen der Benutzer ausführlich. Der Datensatz enthält die beliebtesten Namen in Linz im Jahr 2023. Er umfasst männliche und weibliche Namen, die nach Beliebtheit sortiert sind.
 
 Data Context:
 {context}
