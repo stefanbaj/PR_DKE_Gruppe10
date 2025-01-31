@@ -95,6 +95,8 @@ body {
   overflow-y: auto; /* Allows scrolling for long chat histories */
   padding: 20px;
   background-color: #ffffff;
+  min-height: 400px; /* Ensures a minimum height */
+  max-height: calc(100vh - 200px); /* Prevents it from being too tall */
 }
 
 .message {
